@@ -48,7 +48,7 @@ class _CameraViewState extends State<CameraView> {
 
     try {
       cameras = await availableCameras();
-      final CameraDescription description = cameras.first;
+      final description = cameras.first;
 
       _camera = CameraController(description, ResolutionPreset.high,
           enableAudio: false);

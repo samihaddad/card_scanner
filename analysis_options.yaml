@@ -1,5 +1,4 @@
-include: package:pedantic/analysis_options.yaml
-
+include: package:pedantic/analysis_options.1.9.0.yaml
 analyzer:
   exclude:
     - '**/*.g.dart'
@@ -7,4 +6,4 @@ analyzer:
 
 linter:
   rules:
-    #- public_member_api_docs
+    public_member_api_docs: false
