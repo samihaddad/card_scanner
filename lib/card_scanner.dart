@@ -38,6 +38,9 @@ class CardScanner {
           .toList()
     });
     final String text = result['text'];
+    if (text == null) {
+      return CardInfo();
+    }
     var words = text.split('\n');
     var card = CardInfo();
     for (var word in words) {
