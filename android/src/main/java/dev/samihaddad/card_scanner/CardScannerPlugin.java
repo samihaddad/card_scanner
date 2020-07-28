@@ -66,12 +66,15 @@ public class CardScannerPlugin implements FlutterPlugin, MethodCallHandler {
 
   public void handleDetection(final Map<String, Object> imageData, final MethodChannel.Result result) {
     byte[] bytes = (byte[]) imageData.get("bytes");
-    Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
+    int width = (int) imageData.get("width");
+    int height = (int) imageData.get("height");
     int rotation = (int) imageData.get("rotation");
+
+    System.out.println(rotation);
     InputImage image = InputImage.fromByteArray(
             bytes,
-            /* image width */480,
-            /* image height */360,
+            width,
+            height,
             rotation,
             InputImage.IMAGE_FORMAT_NV21 // or IMAGE_FORMAT_YV12
     );
@@ -84,6 +87,8 @@ public class CardScannerPlugin implements FlutterPlugin, MethodCallHandler {
                         // Task completed successfully
                         // ...
                         String resultText = visionText.getText();
+                        System.out.println("result text is :");
+                        System.out.println(resultText);
                         Map<String,String> map = new HashMap<String,String>();
                         map.put("text", resultText);
                         result.success(map);
