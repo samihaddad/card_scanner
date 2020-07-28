@@ -56,59 +56,49 @@ public class CardScannerPlugin implements FlutterPlugin, MethodCallHandler {
 
     if (call.method.equals("scanCard")) {
       Map<String, Object> imageData = call.arguments();
-
-      byte[] bytes = (byte[]) imageData.get("bytes");
-      Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
-      int rotation = (int) imageData.get("rotation");
-
-      InputImage image = InputImage.fromByteArray(
-              bytes,
-              /* image width */480,
-              /* image height */360,
-              rotation,
-              InputImage.IMAGE_FORMAT_NV21 // or IMAGE_FORMAT_YV12
-      );
-      TextRecognizer recognizer = TextRecognition.getClient();
-      Task<Text> scanResult =
-              recognizer.process(image)
-                      .addOnSuccessListener(new OnSuccessListener<Text>() {
-                        @Override
-                        public void onSuccess(Text visionText) {
-                          // Task completed successfully
-                          // ...
-                          String resultText = visionText.getText();
-                          for (Text.TextBlock block : visionText.getTextBlocks()) {
-                            String blockText = block.getText();
-                            Point[] blockCornerPoints = block.getCornerPoints();
-                            Rect blockFrame = block.getBoundingBox();
-                            for (Text.Line line : block.getLines()) {
-                              String lineText = line.getText();
-                              Point[] lineCornerPoints = line.getCornerPoints();
-                              Rect lineFrame = line.getBoundingBox();
-                              for (Text.Element element : line.getElements()) {
-                                String elementText = element.getText();
-                                Point[] elementCornerPoints = element.getCornerPoints();
-                                Rect elementFrame = element.getBoundingBox();
-                              }
-                            }
-                          }
-                        }
-                      })
-                      .addOnFailureListener(
-                              new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                  // Task failed with an exception
-                                  // ...
-                                }
-                              });
+      handleDetection(imageData, result);
 
 
-      Map<String,String> map = new HashMap<String,String>();
-      result.success(map);
     } else {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
     }
+  }
+
+  public void handleDetection(final Map<String, Object> imageData, final MethodChannel.Result result) {
+    byte[] bytes = (byte[]) imageData.get("bytes");
+    Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
+    int rotation = (int) imageData.get("rotation");
+    InputImage image = InputImage.fromByteArray(
+            bytes,
+            /* image width */480,
+            /* image height */360,
+            rotation,
+            InputImage.IMAGE_FORMAT_NV21 // or IMAGE_FORMAT_YV12
+    );
+    TextRecognizer recognizer = TextRecognition.getClient();
+    Task<Text> scanResult =
+            recognizer.process(image)
+                    .addOnSuccessListener(new OnSuccessListener<Text>() {
+                      @Override
+                      public void onSuccess(Text visionText) {
+                        // Task completed successfully
+                        // ...
+                        String resultText = visionText.getText();
+                        Map<String,String> map = new HashMap<String,String>();
+                        map.put("text", resultText);
+                        result.success(map);
+
+                      }
+                    })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                              @Override
+                              public void onFailure(@NonNull Exception e) {
+                                // Task failed with an exception
+                                // ...
+                                result.error("textRecognizerError", e.getLocalizedMessage(), null);
+                              }
+                            });
   }
 
   @Override
