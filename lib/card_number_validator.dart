@@ -19,14 +19,23 @@ class CardInfoValidator {
   }
 
   bool isValidExpiryDate() {
-    print(_cardExpiryReg.hasMatch(text));
     return _cardExpiryReg.hasMatch(text);
   }
 
   bool isValidCardholderName() {
     // TODO: use text size/dimensions and a blaclist to filter out bank text
-
-    return _cardholderName.hasMatch(text);
+    var blockList = [
+      'bank',
+      'valid',
+      'thur',
+      'visa',
+      'mastercard',
+      'gold',
+      'platinum',
+      'debit',
+      'credit'
+    ];
+    return _cardholderName.hasMatch(text) && !blockList.contains(text.toLowerCase());
   }
 
   String get sanitized {

@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
 List<CameraDescription> cameras;
+typedef OnScanSuccess = void Function(CardInfo card);
 
 class CameraView extends StatefulWidget {
+  final OnScanSuccess onSuccess;
+
+  CameraView({this.onSuccess});
+
   @override
   _CameraViewState createState() => _CameraViewState();
 }
@@ -63,6 +68,9 @@ class _CameraViewState extends State<CameraView> {
         if (result?.cardNumber != null) {
           // _camera.stopImageStream();
           card = result;
+          if (widget.onSuccess != null) {
+            widget.onSuccess(card);
+          }
         }
         setState(() {});
       });
@@ -114,6 +122,10 @@ class _CameraViewState extends State<CameraView> {
                   ),
                   Text(
                     card.expiry ?? '',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    card.cardholderName ?? '',
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
