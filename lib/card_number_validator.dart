@@ -26,19 +26,36 @@ class CardInfoValidator {
     // TODO: use text size/dimensions and a blaclist to filter out bank text
     var blockList = [
       'bank',
+      'card',
       'valid',
-      'thur',
+      'thru',
       'visa',
-      'mastercard',
+      'master',
       'gold',
       'platinum',
       'debit',
       'credit'
     ];
-    return _cardholderName.hasMatch(text) && !blockList.contains(text.toLowerCase());
+    var hasBlockedString = blockList.firstWhere(
+          (el) => text.toLowerCase().contains(el.toLowerCase()),
+          orElse: () => null,
+        ) !=
+        null;
+
+    return !hasBlockedString && _cardholderName.hasMatch(text);
+    // !blockList.contains(text.toLowerCase());
   }
 
   String get sanitized {
+    var embossedFontCorrections = <String, String>{
+      'D': '0',
+      'O': '0',
+      'H': '4',
+      'b': '6',
+    };
+    embossedFontCorrections.forEach((char, number) {
+      text = text.replaceAll(char, number);
+    });
     return text.replaceAll(RegExp(r'[^0-9]+'), '');
   }
 }

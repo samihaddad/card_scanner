@@ -44,6 +44,7 @@ class CardScanner {
       print(word);
       var validator = CardInfoValidator(word);
       if (validator.isValidCardNumber()) {
+        // print(validator.sanitized);
         card.cardNumber = validator.sanitized;
       } else if (validator.isValidExpiryDate()) {
         card.expiry = word;
